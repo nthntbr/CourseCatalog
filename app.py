@@ -15,18 +15,18 @@ def home():
 
 # Code for search page
 @app.route("/search")
-def host():
+def search():
 
     return render_template('/search.html')
 
 # Code for department page
 @app.route("/department")
-def host():
+def department():
 
     return render_template('/department.html')
 
 # Code for course page
 @app.route("/course")
-def host():
+def course():
 
     return render_template('/course.html')
