@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 from pathlib import Path
 
@@ -21,13 +22,16 @@ class Local_Course_Catalogue:
         self.num_of_search_results_shown = 0
         self.current_displayed_search_results_start_iterator = 0
         self.current_displayed_search_results_end_iterator = -1
+
         
         self.collect_course_data()
+
         
     def collect_course_data(self):
         csv_files = Path(self.directory_path).glob("*.csv")
         for f in csv_files:
-            self.course_data = pd.concat([self.course_data, pd.read_csv(f, dtype = str, index_col = False)])
+
+            self.course_data = pd.concat([self.course_data, pd.read_csv(f, dtype = str, index_col = False, usecols = [0, 1, 2, 3, 4, 5, 6, 7, 8])])
     
     
     def top_results(self):
@@ -89,10 +93,10 @@ class Local_Course_Catalogue:
         return self.current_displayed_search_results
 
 # Testing can be done beyond this point.
-test_catalogue = Local_Course_Catalogue("csuCourseCatalogDB")
-print("Showing the top results of an initial search: ")
-test_catalogue.search_course_catalogue_by_terms(9, "", "", "1", "", "", "", "")
-print("The next amount of results after advancing forward in the dataframe: ")
-test_catalogue.show_next_n_results()
-print("The previous results after rewinding in the dataframe: ")
-test_catalogue.show_previous_n_results()
+#test_catalogue = Local_Course_Catalogue("csuCourseCatalogDB")
+#print("Showing the top results of an initial search: ")
+#test_catalogue.search_course_catalogue_by_terms(-1, "", "", "2", "", "", "", "")
+#print("The next amount of results after advancing forward in the dataframe: ")
+#test_catalogue.show_next_n_results()
+#print("The previous results after rewinding in the dataframe: ")
+#test_catalogue.show_previous_n_results()
