@@ -14,16 +14,16 @@
         });
     
         socket.on('connect', function () {
-            socket.emit('departmentPageLoaded', { department: '{{ department }}' });
+            socket.emit('isConnected', {data: 'department'});
         });
     
-        socket.addEventListener('courseListUpdate',  (data) => {
+        socket.on('courseListUpdate', function(data) {
+            console.log("Test");
             var courseList = document.getElementById('course-list');
             courseList.innerHTML = ''; // Clear existing content
     
             data = JSON.parse(data); // Parse the JSON data
-            console.log("Test");
-            
+    
             data.forEach(function (course) {
                 var courseItem = document.createElement('li');
                 courseItem.classList.add('course-item');
@@ -42,6 +42,14 @@
                         detailItem.innerHTML = '<strong>' + keyValue[0] + ':</strong> ' + keyValue[1];
                         courseDetails.appendChild(detailItem);
                     }
+                });
+    
+                // Add a click event listener to each course item
+                courseItem.addEventListener('click', function() {
+                    // Navigate to course.html with relevant course information
+                    
+                    socket.emit('courseClicked', { code: course['code'], name: course['name'] });
+                    //window.location.href = `/course?course_code=${course.code}`;
                 });
     
                 courseItem.appendChild(courseTitle);

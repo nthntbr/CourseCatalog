@@ -43,7 +43,7 @@ class Local_Course_Catalogue:
         self.current_displayed_search_results_end_iterator = self.current_displayed_search_results_end_iterator + self.num_of_search_results_shown
         
         self.current_displayed_search_results = self.all_search_results.iloc[self.current_displayed_search_results_start_iterator:self.current_displayed_search_results_end_iterator]
-        print(self.current_displayed_search_results)
+        #print(self.current_displayed_search_results)
         return self.current_displayed_search_results
     
     def show_previous_n_results(self):
@@ -54,7 +54,7 @@ class Local_Course_Catalogue:
         self.current_displayed_search_results_end_iterator = self.current_displayed_search_results_start_iterator + self.num_of_search_results_shown
         
         self.current_displayed_search_results = self.all_search_results.iloc[self.current_displayed_search_results_start_iterator:self.current_displayed_search_results_end_iterator]
-        print(self.current_displayed_search_results)
+        #print(self.current_displayed_search_results)
         return self.current_displayed_search_results
         
     
@@ -88,7 +88,7 @@ class Local_Course_Catalogue:
             self.num_of_search_results_shown = num_of_entries_to_display
             self.current_displayed_search_results_end_iterator = num_of_entries_to_display
             self.current_displayed_search_results = self.top_results()
-        print(self.current_displayed_search_results)
+        #print(self.current_displayed_search_results)
         # maybe make it into a restful API
         return self.current_displayed_search_results
 

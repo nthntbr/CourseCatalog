@@ -3,33 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='course.css') }}">
+    <title>Department Page</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+    
+        socket.on('connect', function () {
+            socket.emit('isConnected', {data: 'course'});
+        });
+    
+        socket.on('courseListUpdate',  function(data)  {
+            console.log("Test");
+            var courseList = document.getElementById('course-list');
+            courseList.innerHTML = ''; // Clear existing content
+    
+            data = JSON.parse(data); // Parse the JSON data
+            
+            data.forEach(function (course) {
+                var courseItem = document.createElement('li');
+                courseItem.classList.add('course-item');
+    
+                var courseTitle = document.createElement('p');
+                courseTitle.classList.add('course-item__title');
+                courseTitle.innerHTML = '<strong>' + course.code + ' ' + course.name + ' (' + course.credits + ' credits)</strong>';
+    
+                var courseDetails = document.createElement('div');
+                courseDetails.classList.add('course-item__details');
+    
+                Object.keys(course).forEach(function (key) {
+                    if (key !== 'code' && key !== 'name' && key !== 'credits' && course[key] !== null) {
+                        var keyValue = course[key].split(':');
+                        var detailItem = document.createElement('p');
+                        detailItem.innerHTML = '<strong>' + keyValue[0] + ':</strong> ' + keyValue[1];
+                        courseDetails.appendChild(detailItem);
+                    }
+                });
+    
+                courseItem.appendChild(courseTitle);
+                courseItem.appendChild(courseDetails);
+                courseList.appendChild(courseItem);
+            });
+        });
+    </script>
+    
 </head>
 <body>
-    <h1>CSU Course Catalog</h1>
-    <a href="{{ url_for('home')}}">Home</a>
-    <a href="{{ url_for('search')}}">Search</a>
-    <a href="{{ url_for('course')}}">Course</a>
-    <a href="{{ url_for('department')}}">Department</a>
-
-    
-    <header>
-        <nav>
-        <div class="menu">Menu</div>
-        <ul>
-            <li><a href="#">Majors</a></li>
-            <li><a href="#">Courses</a></li>
-            <li><a href="#">Departments</a></li>
-            <li><a href="#">Register</a></li>
-            <li><a href="#">Learn more</a></li>
-        </ul>
+    <header class="header">
+        <div class="header__titles">
+            <h1 class="header__title">CSU Course Catalog</h1>
+            <h4 class="header__subtitle">{{ department }}</h4>
+        </div>
+        <nav class="menu">
+            <button class="menu__button">&#9776;</button>
+            <div class="menu__options">
+                <a href="{{ url_for('home') }}">Home</a>
+                <a href="{{ url_for('search') }}">Search</a>
+            </div>
         </nav>
-        <h1>Colorado State University</h1>
-        <h2>Welcome to Colorado State University! Home of the Rams!</h2>
     </header>
-    <main>
-        <p>Nestled in Fort Collins against the backdrop of the Rocky Mountains, Colorado State University (CSU) offers top-tier education in a vibrant, diverse community. Known for cutting-edge research, hands-on learning, and a spirited campus life, CSU merges academic excellence with the beauty of Colorado's landscapes, fostering a dynamic environment where students thrive.</p>
-    </main>
-        
+   
+    <div class="content">
+        <ul class="course-list" id="course-list">
+            <!-- Course items will be added here dynamically -->
+        </ul>
+    </div>
 </body>
 </html>

@@ -86,14 +86,7 @@ body {
     margin-bottom: 1rem;
     border-radius: 4px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s, cursor 0.3s; /* Add transition effect */
 }
-
-.course-item:hover {
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Increase shadow values for exaggeration */
-    cursor: pointer; /* Change cursor to a pointer on hover */
-}
-
 
 .course-item__title {
     font-size: 18px;

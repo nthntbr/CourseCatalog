@@ -15,7 +15,6 @@ socketio = SocketIO(app)
 course_catalogue = Local_Course_Catalogue("csuCourseCatalogDB")
 #reference to coures catalog DB
 
-
 session_cache = {}
 
 def cache_session_data(session_id, data):
@@ -32,7 +31,8 @@ def clear_session_data(session_id):
         del session_cache[session_id]
 
 
-
+def ack():
+    print('message was received!')
 
 
 
@@ -60,18 +60,13 @@ def department():
         return 'Invalid or expired session', 400
     
     names = get_cached_session_data('departmentNames')
+    cache_session_data('departmentCode', department_code)
     department = "ERROR!"
     for name in names:
         if name[1] == department_code:
             department = name[0]
             break
     
-
-    df = course_catalogue.search_course_catalogue_by_terms(-1, department_code, "", "", "", "", "", "")
-    print(department_code)
-    print(df)
-    
-    socketio.emit('courseListUpdate', df.to_json(orient='records'))
 
 
     #may want to delete not sure
@@ -81,8 +76,37 @@ def department():
 # Code for course page
 @app.route("/course")
 def course():
+    session_id = request.args.get('session_id')
+    if not session_id:
+        return 'Session ID not provided', 400
 
-    return render_template('/course.html')
+    course_code = get_cached_session_data(session_id)
+    
+    if not course_code:
+        return 'Invalid or expired session', 400
+    parts = course_code.split("\xa0")
+
+    if len(parts) == 2:
+        part1 = parts[0].strip()
+        part2 = parts[1].strip()
+        print("Part 1: " + part1)
+        print("Part 2: " + part2)
+    else:
+        print("Invalid input string format.")
+    clear_session_data('departmentCode')
+    cache_session_data('departmentCode', parts[0])
+    department = "ERROR!"
+    names = get_cached_session_data('departmentNames')
+    for name in names:
+        if name[1] == parts[0]:
+            department = name[0]
+            break
+    
+    clear_session_data('courseCode')
+    cache_session_data('courseCode', course_code)
+    
+    
+    return render_template('/course.html', department=department)
 
 
 
@@ -103,8 +127,31 @@ def isConnected(data):
             session['departments'] = departments
             socketio.emit('departmentsUpdate', session['departments'])
         #print(session['selected_department'])
+    if data['data'] == 'department':
+        print("Connected to department!")
+        print("Loading Courses...\n")
+        loadCourseList()
+    if data['data'] == 'course':
+        print("Connected to course!")
+        print("Loading Course...\n")
+        loadCourse()
 
+def loadCourseList():
+    department_code = get_cached_session_data('departmentCode')  # Retrieve the department code from the data parameter
+    df = course_catalogue.search_course_catalogue_by_terms(-1, department_code, "", "", "", "", "", "")
+    json = df.to_json(orient='records')
+    socketio.emit('courseListUpdate', json, callback=ack)
 
+def loadCourse():
+    department_code = get_cached_session_data('departmentCode')  # Retrieve the department code from the data parameter
+    course_code = get_cached_session_data('courseCode')
+    print("Department Code: " + department_code)
+
+    print("Course Code: " + course_code)
+    df = course_catalogue.search_course_catalogue_by_terms(-1, course_code, "", "", "", "", "", "")
+    json = df.to_json(orient='records')
+    print(json)
+    socketio.emit('courseListUpdate', json, callback=ack)
 
 
 
@@ -112,10 +159,15 @@ def isConnected(data):
 def handle_department_click(data):
     session_id = str(uuid4())
     cache_session_data(session_id, data['code'])
+    print("test")
     emit('redirect_to_department', {'session_id': session_id}, to=request.sid)
 
 
-
+@socketio.on('courseClicked')
+def handle_course_click(data):
+    session_id = str(uuid4())
+    cache_session_data(session_id, data['code'])
+    emit('redirect_to_course', {'session_id': session_id}, to=request.sid)
 
 
 def loadDepartments():
