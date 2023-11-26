@@ -1,0 +1,164 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+main {
+    padding: 20px;
+}
+
+button {
+    background: none;
+    border: none;
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    display: block; /* Display buttons as block elements to stack them vertically */
+    margin-bottom: 10px; /* Add vertical spacing between buttons */
+}
+
+/* Remove default button focus outline */
+button:focus {
+    outline: none;
+}
+
+/* Style the buttons on hover */
+button:hover {
+    text-decoration: none; /* Remove underline on hover */
+    color: darkblue; /* Change text color on hover */
+}
+
+
+.header {
+    background-color: #333;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header__titles {
+    text-align: left;
+    position: absolute; 
+    top: 50%; left: 50%; 
+    transform: translate(-50%, -50%);
+}
+
+.header__title, .header__subtitle {
+    color: #fff;
+    margin-bottom: 0;
+}
+
+.menu {
+    position: relative;
+}
+
+.menu__button {
+    background-color: #333;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.menu__options {
+    display: none;
+    /* Add position: absolute; and adjust top and left values */
+    position: absolute;
+    top: 100%;
+    left: 0; /* Adjust this value as needed */
+    background-color: #fafafa;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    list-style-type: none;
+    /* Add a width to the dropdown */
+    width: 150px; /* Adjust the width as needed */
+}
+
+.menu__options a {
+    /* Add padding to the left to create space for the button */
+    padding-left: 20px; /* Adjust this value as needed */
+    color: #333;
+    padding: 0.75rem 1rem;
+    display: block;
+    font-size: 16px;
+    text-decoration: none;
+}
+
+.menu__options a:hover {
+    background-color: #dbdbdb;
+}
+
+.menu:hover .menu__options {
+    display: block;
+}
+
+.menu:hover .menu__button {
+    background-color: #4d4d4d;
+}
+
+.letter {
+    font-size: 36px;
+}
+
+.content {
+    padding: 2rem;
+}
+
+.content strong {
+    text-indent: 10px;
+    font-size: 36px;
+}
+
+.search-link {
+    display: inline-block;
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    font-size: 18px;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.search-link:hover {
+    background-color: #4d4d4d;
+}
+
+.department-list {
+    list-style-type: none;
+}
+
+.department-category {
+    margin-bottom: 1rem;
+}
+
+.department-item {
+    margin-bottom: 0.25rem;
+}
+
+.department-item a {
+    color: #333;
+    text-decoration: none;
+}
+
+.department-item a:hover {
+    text-decoration: underline;
+}
+
+#department-content li {
+    text-indent: 50px;
+    list-style-type: none;
+}

@@ -3,21 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
     <title>Home Page</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
     <script type="text/javascript">
-        var socket = io();
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
         socket.on('connect', function() {
-            socket.emit('isConnected', {data: 'Host connected!'});
+            socket.emit('isConnected', {data: 'index'});
 
         });
+
+        socket.addEventListener('departmentsUpdate', (data) => {
+            var departmentsList = document.getElementById('departments');
+            
+            // Clear any existing content in the departmentsList
+            departmentsList.innerHTML = '';
+
+            // Loop through the data and create a button for each department
+            for (var i = 0; i < data.length; i++) {
+                var departmentName = data[i][0];
+                var departmentCode = data[i][1];
+
+                // Create a button element
+                var button = document.createElement('button');
+                button.textContent = departmentName;
+
+                // Attach a click event listener to the button using an IIFE
+                (function(code) {
+                    button.addEventListener('click', function() {
+                        socket.emit('departmentButtonClicked', { code: code });
+                        //window.location.href = `/department?code=${code}`; // Redirect to the department page with the department code as a parameter
+                    });
+                })(departmentCode); // Pass departmentCode to the IIFE
+
+                // Append the button to the departmentsList
+                departmentsList.appendChild(button);
+            }
+        });
+
+        socket.on('redirect_to_department', function(data) {
+            window.location.href = `/department?session_id=${data.session_id}`; // Include the session ID in the query parameter
+        });
+
+
+
+        
     </script>
 </head>
 <body>
-    <h1>CSU Course Catalog</h1>
-    <a href="{{ url_for('home')}}">Home</a>
-    <a href="{{ url_for('search')}}">Search</a>
-    <a href="{{ url_for('course')}}">Course</a>
-    <a href="{{ url_for('department')}}">Department</a>
+    <header class="header">
+        <div class="header__titles">
+            <h1 class="header__title">Colorado State University</h1>
+        </div>
+        <nav class="menu">
+            <button class="menu__button">&#9776;</button>
+            <div class="menu__options">
+                <a href="{{ url_for('home')}}">Home</a>
+                <a href="{{ url_for('search')}}">Search</a>
+                <a href="#">Departments</a>
+                <a href="#">Majors</a>
+                <a href="#">Learn more</a>
+            </div>
+            
+        </nav>
+        <h2>Welcome to Colorado State University! Home of the Rams!</h2>
+    </header>
+    
+    <main>
+        <p>Nestled in Fort Collins against the backdrop of the Rocky Mountains, Colorado State University (CSU) offers top-tier education in a vibrant, diverse community. Known for cutting-edge research, hands-on learning, and a spirited campus life, CSU merges academic excellence with the beauty of Colorado's landscapes, fostering a dynamic environment where students thrive.</p>
+        <div id="departments">
+            
+
+        </div>
+    
+    </main>
+        
 </body>
 </html>
