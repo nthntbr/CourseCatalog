@@ -102,3 +102,81 @@ body {
 .course__detail-title {
     font-weight: bold;
 }
+
+.filter_menu {
+    position: relative;
+    
+}
+
+.filter_menu__button {
+    background-color: #333;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.filter_menu__options {
+    width: 50%;
+    display: none;
+    position: absolute;
+    background-color: #fafafa;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    list-style-type: none;
+    left: 1;
+    z-index: 1;
+}
+
+.filter_menu__options a {
+    color: #333;
+    padding: 0.75rem 1rem;
+    display: block;
+    font-size: 16px;
+    text-decoration: none;
+}
+
+.filter_menu__options a:hover {
+    background-color: #dbdbdb;
+}
+
+.filter_menu:hover .filter_menu__options {
+    display: block;
+}
+
+.filter_menu:hover .filter_menu__button {
+    background-color: #4d4d4d;
+}
+
+.filter-menu {
+    
+    width: 200px;
+}
+
+.course-item {
+    background-color: #f9f9f9;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s, cursor 0.3s; /* Add transition effect */
+}
+
+.course-item:hover {
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Increase shadow values for exaggeration */
+    cursor: pointer; /* Change cursor to a pointer on hover */
+}
+
+
+.course-item__title {
+    font-size: 18px;
+    margin-bottom: 0.5rem;
+}
+
+.course-item__details {
+    padding-left: 1rem;
+}
+
+.course-item__details p {
+    margin-bottom: 0.25rem;
+}

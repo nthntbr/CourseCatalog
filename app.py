@@ -127,14 +127,22 @@ def isConnected(data):
             session['departments'] = departments
             socketio.emit('departmentsUpdate', session['departments'])
         #print(session['selected_department'])
-    if data['data'] == 'department':
         print("Connected to department!")
         print("Loading Courses...\n")
         loadCourseList()
-    if data['data'] == 'course':
+    elif data['data'] == 'course':
         print("Connected to course!")
         print("Loading Course...\n")
         loadCourse()
+    elif data['data'] == 'search':
+        print("Connected to search!")
+        print("Loading Course...\n")
+        departments = loadDepartments()
+        session['departments'] = departments
+        socketio.emit('departmentMenuUpdate', session['departments'])
+        loadSearches()
+        #THIS IS WHRE YOU LEFT OFF
+
 
 def loadCourseList():
     department_code = get_cached_session_data('departmentCode')  # Retrieve the department code from the data parameter
@@ -153,6 +161,24 @@ def loadCourse():
     print(json)
     socketio.emit('courseListUpdate', json, callback=ack)
 
+
+
+@socketio.on('departmentFilterClicked')
+def handle_department_filter_click(data):
+    clear_session_data('departmentFilter')
+    cache_session_data('departmentFilter', data['code'])
+    print("departmentFilter: " + get_cached_session_data('departmentFilter'))
+    #demit('redirect_to_department', {'session_id': session_id}, to=request.sid)
+
+@socketio.on('updateQuery')
+def handle_query_update(data):
+    print(data)
+    clear_session_data(data['data'])
+    if data['num'] > 0:
+        cache_session_data(data['data'], str(data['num']))
+    s = data['data']
+    #print(s + ": " + get_cached_session_data(data['data']))
+    #demit('redirect_to_department', {'session_id': session_id}, to=request.sid)
 
 
 @socketio.on('departmentButtonClicked')
@@ -197,3 +223,27 @@ def loadAtoZ(data):
     return departments
 
 
+def loadSearches():
+    departmentFilter = get_cached_session_data('departmentFilter')
+    levelFilter = get_cached_session_data('levelFilter')
+    creditFilter = get_cached_session_data('creditFilter')
+    termFilter = get_cached_session_data('termFilter')
+
+    if departmentFilter == None:
+        departmentFilter = ''
+    if levelFilter == None:
+        levelFilter = '' 
+    if creditFilter == None:
+        creditFilter = ''
+    if termFilter == None:
+        termFilter = ''
+    elif termFilter == '1':
+        termFilter = 'Spring' 
+    elif termFilter == '2':
+        termFilter = 'Summer' 
+    elif termFilter == '3':
+        termFilter = 'Fall' 
+
+    df = course_catalogue.search_course_catalogue_by_terms(-1, departmentFilter, "",levelFilter , creditFilter, "", termFilter, "")
+    json = df.to_json(orient='records')
+    socketio.emit('searchListUpdate', json, callback=ack)

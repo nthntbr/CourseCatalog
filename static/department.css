@@ -107,3 +107,17 @@ body {
 .course-item__details p {
     margin-bottom: 0.25rem;
 }
+
+
+.filters {
+    display: flex;
+    flex-wrap: wrap; /* Allow filters to wrap to the next line if the width is not enough */
+    gap: 20px; /* Adjust the gap between filter menus */
+    justify-content: center; /* Center the filter menus horizontally */
+}
+
+.filter-menu {
+    text-align: center;
+    flex-grow: 1; /* Allow filter menus to grow equally to occupy available space */
+    max-width: 200px; /* Set a maximum width for each filter menu */
+}

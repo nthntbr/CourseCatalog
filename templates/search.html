@@ -4,8 +4,182 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='search.css') }}">
-
     <title>Search Page</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+       
+        socket.on('redirect_to_course', function(data) {
+            window.location.href = `/course?session_id=${data.session_id}`; // Include the session ID in the query parameter
+        });
+    
+        socket.on('connect', function () {
+            socket.emit('isConnected', {data: 'search'});
+        });
+    
+        socket.on('searchListUpdate', function(data) {
+            console.log("Test");
+            var courseList = document.getElementById('course-list');
+            courseList.innerHTML = ''; // Clear existing content
+    
+            data = JSON.parse(data); // Parse the JSON data
+    
+            data.forEach(function (course) {
+                var courseItem = document.createElement('li');
+                courseItem.classList.add('course-item');
+    
+                var courseTitle = document.createElement('p');
+                courseTitle.classList.add('course-item__title');
+                courseTitle.innerHTML = '<strong>' + course.code + ' ' + course.name + ' (' + course.credits + ' credits)</strong>';
+    
+                var courseDetails = document.createElement('div');
+                courseDetails.classList.add('course-item__details');
+    
+                Object.keys(course).forEach(function (key) {
+                    if (key !== 'code' && key !== 'name' && key !== 'credits' && course[key] !== null) {
+                        var keyValue = course[key].split(':');
+                        var detailItem = document.createElement('p');
+                        detailItem.innerHTML = '<strong>' + keyValue[0] + ':</strong> ' + keyValue[1];
+                        courseDetails.appendChild(detailItem);
+                    }
+                });
+    
+                // Add a click event listener to each course item
+                courseItem.addEventListener('click', function() {
+                    // Navigate to course.html with relevant course information
+                    
+                    socket.emit('courseClicked', { code: course['code'], name: course['name'] });
+                    //window.location.href = `/course?course_code=${course.code}`;
+                });
+    
+                courseItem.appendChild(courseTitle);
+                courseItem.appendChild(courseDetails);
+                courseList.appendChild(courseItem);
+            });
+        });
+
+        
+
+        socket.addEventListener('departmentMenuUpdate', (data) => {
+            var departmentsList = document.getElementById('departments');
+            
+            // Clear any existing content in the departmentsList
+            departmentsList.innerHTML = '';
+            //console.log("Test");
+            // Loop through the data and create a button for each department
+            for (var i = 0; i < data.length; i++) {
+                var departmentName = data[i][0];
+                var departmentCode = data[i][1];
+
+                // Create a button element
+                var button = document.createElement('button');
+                button.textContent = departmentName;
+
+                
+                // Attach a click event listener to the button using an IIFE
+                (function(code) {
+                    button.addEventListener('click', function() {
+                        socket.emit('departmentFilterClicked', { code: code });
+                        //window.location.href = `/department?code=${code}`; // Redirect to the department page with the department code as a parameter
+                    });
+                })(departmentCode); // Pass departmentCode to the IIFE
+
+                // Append the button to the departmentsList
+                departmentsList.appendChild(button);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById('level0').addEventListener('click', () => {
+                const level = 0; 
+                levelFilter(level);
+            });
+            document.getElementById('level1').addEventListener('click', () => {
+                const level = 1; 
+                levelFilter(level);
+            });
+            document.getElementById('level2').addEventListener('click', () => {
+                const level = 2; 
+                levelFilter(level);
+            });
+            document.getElementById('level3').addEventListener('click', () => {
+                const level = 3; 
+                levelFilter(level);
+            });
+            document.getElementById('level4').addEventListener('click', () => {
+                const level = 4; 
+                levelFilter(level);
+            });
+            document.getElementById('level5').addEventListener('click', () => {
+                const level = 5; 
+                levelFilter(level);
+            });
+        });
+
+        function levelFilter(level) {
+            console.log(`Filter by level: ${level}`);
+            socket.emit('updateQuery', {data: 'levelFilter', num: level});
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById('credits0').addEventListener('click', () => {
+                const credits = 0; 
+                creditFilter(credits);
+            });
+            document.getElementById('credits1').addEventListener('click', () => {
+                const credits = 1; 
+                creditFilter(credits);
+            });
+            document.getElementById('credits2').addEventListener('click', () => {
+                const credits = 2; 
+                creditFilter(credits);
+            });
+            document.getElementById('credits3').addEventListener('click', () => {
+                const credits = 3; 
+                creditFilter(credits);
+            });
+            document.getElementById('credits4').addEventListener('click', () => {
+                const credits = 4; 
+                creditFilter(credits);
+            });
+            document.getElementById('credits5').addEventListener('click', () => {
+                const credits = 5; 
+                creditFilter(credits);
+            });
+        });
+
+        function creditFilter(credits) {
+            socket.emit('updateQuery', {data: 'creditFilter', num: credits});
+            console.log(`Filter by credits: ${credits}`);
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById('term0').addEventListener('click', () => {
+                const term = 0; 
+                creditFilter(term);
+            });
+            document.getElementById('term1').addEventListener('click', () => {
+                const term = 1; 
+                creditFilter(term);
+            });
+            document.getElementById('term2').addEventListener('click', () => {
+                const term = 2; 
+                creditFilter(term);
+            });
+            document.getElementById('term3').addEventListener('click', () => {
+                const term = 3; 
+                creditFilter(term);
+            });
+        });
+
+        function termFilter(term) {
+            socket.emit('updateQuery', {data: 'termFilter', num: term});
+            console.log(`Filter by term: ${term}`);
+        }
+
+
+
+    </script>
 </head>
 <body>
     <header class="header">
@@ -16,7 +190,7 @@
         <nav class="menu">
             <button class="menu__button">&#9776;</button>
             <div class="menu__options">
-                <a href="{{ url_for('home')}}">Home</a>å
+                <a href="{{ url_for('home')}}">Home</a>
                 <a href="{{ url_for('search')}}">Search</a>
             </div>
         </nav>
@@ -27,39 +201,63 @@
             <form action="{{ url_for('search') }}" method="post">
                 <input type="text" name="q">
                 <input type="submit" value="Search">
-            </form>            
-
+            </form>
         </div>
         <div class="filters">
-            <h5>Filters</h5>
-            {% for filter in queryList %}
-                <button>
-                    <a href="{{ url_for('remove_filter', filter=filter) }}">{{filter}}</a>
-                </button>
-            {% endfor %}
-
+            
+            <h3>Department</h3>
+            <nav class="filter_menu">
+                <button class="filter_menu__button">&#9776;</button>
+                <div class="filter_menu__options" id="departments"></div>
+            </nav>
+            
+            <div class="filter-menu">
+                <h3>Course Level</h3>
+                <nav class="filter_menu">
+                    <button class="filter_menu__button">&#9776;</button>
+                    <div class="filter_menu__options">
+                        <a id="level0">NONE</a>
+                        <a id="level1">100</a>
+                        <a id="level2">200</a>
+                        <a id="level3">300</a>
+                        <a id="level4">400</a>
+                        <a id="level5">500</a>
+                    </div>
+                </nav>
+            </div>
+            <div class="filter-menu">
+                <h3>Credits</h3>
+                <nav class="filter_menu">
+                    <button class="filter_menu__button">&#9776;</button>
+                    <div class="filter_menu__options">
+                        <a id="credits0">NONE</a>
+                        <a id="credits1">1</a>
+                        <a id="credits2">2</a>
+                        <a id="credits3">3</a>
+                        <a id="credits4">4</a>
+                        <a id="credits5">5</a>
+                    </div>
+                </nav>
+            </div>
+            <div class="filter-menu">
+                <h3>Term</h3>
+                <nav class="filter_menu">
+                    <button class="filter_menu__button">&#9776;</button>
+                    <div class="filter_menu__options">
+                        <a id="term0">NONE</a>
+                        <a id="term1">Spring</a>
+                        <a id="term2">Summer</a>
+                        <a id="term3">Fall</a>
+                    </div>
+                </nav>
+            </div>
         </div>
         
-
-        <ul>
-            {% for department in results %}
-            <h3>{{department[0]}}</h3>
-                {% for c in department[1] %}
-                <li class="course">
-                    <p class="course__header">{{ c.code }} {{ c.name }} ({{ c.credits }} credits)</p>
-                    <div>
-                        {% for key, value in c.items() %}
-                            {% if value is not none and key not in ['code', 'name', 'credits'] %}
-                            {% set s = value.split(':', 1) %}
-                            <p class="course__detail"><span class="course__detail-title">{{ s[0] }}:</span> {{ s[1] }}</p>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                </li>
-                {% endfor %}
-                <hr>
-            {% endfor %}
-        </ul>
+        <div class="courseContent">
+            <ul class="course-list" id="course-list">
+                <!-- Course items will be added here dynamically -->
+            </ul>
+        </div>
     </div>
 </body>
 </html>
